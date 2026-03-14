@@ -39,6 +39,21 @@ if (process.env.NODE_ENV === "production") {
     });
 }
 
+// Health check route
+app.get("/health", (req, res) => res.status(200).send("OK"));
+
+// Self ping to stay alive on Render free plan
+const RENDER_URL = "https://streamify-diaa.onrender.com";
+
+setInterval(async () => {
+  try {
+    await fetch(RENDER_URL + "/health");
+    console.log("Staying alive...");
+  } catch (err) {
+    console.error("Ping failed", err);
+  }
+}, 14 * 60 * 1000);
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
